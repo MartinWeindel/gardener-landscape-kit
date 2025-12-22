@@ -26,3 +26,19 @@ else
   export RUNTIME_CLUSTER_NAME=$GLK_KIND_CLUSTER_PREFIX-runtime
   export RUNTIME_KUBECONFIG=${SOURCE_PATH}/dev/kind-$RUNTIME_CLUSTER_NAME-kubeconfig.yaml
 fi
+
+kubectl_glk() {
+  kubectl --kubeconfig "$GLK_KUBECONFIG" "$@"
+}
+
+kubectl_glk_apply() {
+  kubectl --kubeconfig "$GLK_KUBECONFIG" apply --server-side --force-conflicts "$@"
+}
+
+kubectl_runtime() {
+  kubectl --kubeconfig "$RUNTIME_KUBECONFIG" "$@"
+}
+
+kubectl_runtime_apply() {
+  kubectl --kubeconfig "$RUNTIME_KUBECONFIG" apply --server-side --force-conflicts "$@"
+}
