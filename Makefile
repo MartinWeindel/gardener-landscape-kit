@@ -106,3 +106,7 @@ kind-up: $(KIND) $(KUBECTL) $(HELM)
 .PHONY: kind-down
 kind-down: $(KIND) $(KUBECTL)
 	@$(HACK_DIR)/kind/kind-delete-cluster.sh single
+
+.PHONY: e2e-generate
+e2e-generate:
+	@$(HACK_DIR)/kind/generate-repos.sh $(REPO_ROOT)/dev/e2e
