@@ -90,3 +90,11 @@ verify-extended: check-generate check format test-cov sast-report
 .PHONY: generate-ocm-testdata
 generate-ocm-testdata:
 	@go run ./hack/tools/ocm-testdata-generator -config $(REPO_ROOT)/pkg/ocm/components/testdata/config.yaml
+
+.PHONY: git-ssh-up
+git-ssh-up:
+	@bash $(HACK_DIR)/kind/plain-git-ssh/git-ssh-up.sh
+
+.PHONY: git-ssh-down
+git-ssh-down:
+	@bash $(HACK_DIR)/kind/plain-git-ssh/git-ssh-down.sh

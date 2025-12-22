@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: SAP SE or an SAP affiliate company and Gardener contributors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+version: "3.8"
+services:
+  git-ssh:
+    build: .
+    container_name: git-ssh
+    ports:
+      - "2222:22"                # expose SSH on host port 2222
+    volumes:
+      - ./repos:/srv/git         # persistent repositories
+      - ./authorized_keys:/authorized_keys:ro
+    environment:
+      - REPO_NAMES=base.git test-landscape.git
+    restart: unless-stopped
+    networks:
+      - shared_net
+
+networks:
+  shared_net:
+    external: true
+    name: kind
+
