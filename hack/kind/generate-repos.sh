@@ -90,10 +90,12 @@ ensure_gotk_sync_updated() {
 
   yq eval -i 'select(.metadata.name=="flux-system" and .kind == "GitRepository") |= .spec.include = [{"repository": {"name": "base-repo"}, "fromPath": "components", "toPath": "base/components"}]' "${sync_yaml}"
 
-  # Check if document exists, if not append it
-  if ! yq 'select(.metadata.name == "base-repo" and .kind == "GitRepository")' "${sync_yaml}" | grep -q .; then
-    git_ssh_ip=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' git-ssh)
-    cat >> "${sync_yaml}" <<EOF
+  # Keep everything except the base-repo GitRepository
+  yq eval -i 'select(.metadata.name != "base-repo" or .kind != "GitRepository")' "${sync_yaml}"
+
+  # append base-repo GitRepository
+  git_ssh_ip=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' git-ssh)
+  cat >> "${sync_yaml}" <<EOF
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -108,7 +110,7 @@ spec:
     name: flux-system
   url: ssh://git@${git_ssh_ip}:22/srv/git/base.git
 EOF
-fi
+
   git add "${sync_yaml}"
   git commit -m "Updated GitRepositories" || echo "No changes to commit"
   git push
