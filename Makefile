@@ -108,5 +108,9 @@ kind-down: $(KIND) $(KUBECTL)
 	@$(HACK_DIR)/kind/kind-delete-cluster.sh single
 
 .PHONY: e2e-generate
-e2e-generate:
+e2e-generate: git-ssh-up
 	@$(HACK_DIR)/kind/generate-repos.sh $(REPO_ROOT)/dev/e2e
+
+.PHONY: e2e-deploy-flux
+e2e-deploy-flux: e2e-generate $(KUBECTL)
+	@$(HACK_DIR)/kind/deploy-flux.sh $(REPO_ROOT)/dev/e2e
