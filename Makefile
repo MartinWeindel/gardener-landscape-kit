@@ -98,3 +98,11 @@ git-ssh-up:
 .PHONY: git-ssh-down
 git-ssh-down:
 	@bash $(HACK_DIR)/kind/plain-git-ssh/git-ssh-down.sh
+
+.PHONY: kind-up ## create single kind cluster for hosting glk and runtime
+kind-up: $(KIND) $(KUBECTL) $(HELM)
+	@$(HACK_DIR)/kind/kind-create-cluster.sh single 100 150
+
+.PHONY: kind-down
+kind-down: $(KIND) $(KUBECTL)
+	@$(HACK_DIR)/kind/kind-delete-cluster.sh single
