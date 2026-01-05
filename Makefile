@@ -100,15 +100,16 @@ git-ssh-down:
 	@bash $(HACK_DIR)/kind/plain-git-ssh/git-ssh-down.sh
 
 .PHONY: kind-up ## create single kind cluster for hosting glk and runtime
-kind-up: $(KIND) $(KUBECTL) $(HELM)
+kind-up: git-ssh-up $(KIND) $(KUBECTL) $(HELM)
 	@$(HACK_DIR)/kind/kind-create-cluster.sh single 100 150
 
 .PHONY: kind-down
-kind-down: $(KIND) $(KUBECTL)
+kind-down: git-ssh-down $(KIND) $(KUBECTL)
 	@$(HACK_DIR)/kind/kind-delete-cluster.sh single
 
 .PHONY: e2e-prepare
-e2e-prepare: git-ssh-up $(KUBECTL)
+e2e-prepare: $(SKAFFOLD) $(HELM) $(KUBECTL) $(YQ)
 	@$(HACK_DIR)/kind/generate-repos.sh $(REPO_ROOT)/dev/e2e
 	@$(HACK_DIR)/kind/deploy-flux.sh $(REPO_ROOT)/dev/e2e
 	@$(HACK_DIR)/kind/prepare-garden.sh $(REPO_ROOT)/dev/e2e
+	@$(HACK_DIR)/kind/provider-local/build.sh $(REPO_ROOT)/dev/e2e
