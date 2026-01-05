@@ -123,6 +123,7 @@ kind-down: git-server-down registry-down $(KIND) $(KUBECTL)
 	@$(HACK_DIR)/kind/kind-delete-cluster.sh single
 
 .PHONY: e2e-prepare
-e2e-prepare:
+e2e-prepare: $(KUBECTL)
 	@$(HACK_DIR)/kind/generate-repos.sh $(REPO_ROOT)/dev/e2e
-    @$(HACK_DIR)/kind/deploy-flux.sh $(REPO_ROOT)/dev/e2e
+	@$(HACK_DIR)/kind/deploy-flux.sh $(REPO_ROOT)/dev/e2e
+	@$(HACK_DIR)/kind/prepare-garden.sh $(REPO_ROOT)/dev/e2e
