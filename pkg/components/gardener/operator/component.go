@@ -15,6 +15,8 @@ import (
 const (
 	// ComponentName is the name of the gardener-operator component.
 	ComponentName = "gardener-operator"
+	// OCMComponentName is the OCM name of the component containing the gardener-operator.
+	OCMComponentName = "github.com/gardener/gardener"
 	// ComponentDirectory is the directory of the gardener-operator component within the base components directory.
 	ComponentDirectory = "gardener/operator"
 )
@@ -44,6 +46,11 @@ func NewComponent() components.Interface {
 // Name returns the component name.
 func (c *component) Name() string {
 	return ComponentName
+}
+
+// OCMName returns the OCM component name.
+func (c *component) OCMName() string {
+	return OCMComponentName
 }
 
 // GenerateBase generates the component base directory.
