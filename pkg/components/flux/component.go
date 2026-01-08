@@ -45,6 +45,11 @@ func (*component) Name() string {
 	return "flux"
 }
 
+// OCMName returns the OCM component name.
+func (*component) OCMName() string {
+	return ""
+}
+
 // GenerateBase generates the component base directory.
 func (c *component) GenerateBase(_ components.Options) error {
 	return nil

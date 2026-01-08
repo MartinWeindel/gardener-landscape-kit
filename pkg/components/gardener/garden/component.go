@@ -41,6 +41,11 @@ func (c *component) Name() string {
 	return "garden"
 }
 
+// OCMName returns the related OCM component name.
+func (c *component) OCMName() string {
+	return ""
+}
+
 // GenerateBase generates the component base directory.
 func (c *component) GenerateBase(options components.Options) error {
 	for _, op := range []func(components.Options) error{

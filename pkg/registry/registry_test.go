@@ -379,6 +379,7 @@ var _ = Describe("Registry", func() {
 // mockComponent is a test helper that implements components.Interface
 type mockComponent struct {
 	name                    string
+	ocmName                 string
 	generateBaseFunc        func(components.Options) error
 	generateLandscapeFunc   func(components.LandscapeOptions) error
 	generateBaseCalled      bool
@@ -387,6 +388,10 @@ type mockComponent struct {
 
 func (m *mockComponent) Name() string {
 	return m.name
+}
+
+func (m *mockComponent) OCMName() string {
+	return m.ocmName
 }
 
 func (m *mockComponent) GenerateBase(opts components.Options) error {

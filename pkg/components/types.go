@@ -43,6 +43,8 @@ type LandscapeOptions interface {
 type Interface interface {
 	// Name returns the component name.
 	Name() string
+	// OCMName returns the OCM component name or an empty string if not applicable.
+	OCMName() string
 	// GenerateBase generates the component base dir.
 	GenerateBase(Options) error
 	// GenerateLandscape generates the component landscape dir.
