@@ -7,6 +7,7 @@ package components
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 	"slices"
 	"strings"
 	"sync"
@@ -18,6 +19,7 @@ import (
 	descriptorv2 "ocm.software/open-component-model/bindings/go/descriptor/v2"
 	accessv1 "ocm.software/open-component-model/bindings/go/oci/spec/access/v1"
 
+	configv1alpha1 "github.com/gardener/gardener-landscape-kit/pkg/apis/config/v1alpha1"
 	ocmimagevector "github.com/gardener/gardener-landscape-kit/pkg/ocm/imagevector"
 	"github.com/gardener/gardener-landscape-kit/pkg/ocm/ociaccess"
 )
@@ -322,6 +324,32 @@ func (c *Components) DumpComponentRefListAsYAML() (string, error) {
 		sb.WriteString("  versions: [" + strings.Join(m[name], ", ") + "]\n")
 	}
 	return sb.String(), nil
+}
+
+// GetGLKComponentVersionMap returns a map of OCM component names to their versions.
+// If ignoreMissing is true, missing components are ignored.
+func (c *Components) GetGLKComponentVersionMap(cfg *configv1alpha1.LandscapeKitConfiguration, ignoreMissing bool) (map[string]string, error) {
+	requestedOCMComponents, err := collectRequestedOCMComponentNames(cfg)
+	if err != nil {
+		return nil, fmt.Errorf("failed to collect requested OCM component names: %w", err)
+	}
+	m := map[string]string{}
+	for _, component := range c.GetSortedComponents() {
+		ocmName, version, err := component.ExtractNameAndVersion()
+		if err != nil {
+			return nil, fmt.Errorf("failed to extract name and version from component reference %s: %w", component, err)
+		}
+		if names := requestedOCMComponents[ocmName]; len(names) > 0 {
+			for _, name := range names {
+				m[name] = version
+			}
+			delete(requestedOCMComponents, ocmName)
+		}
+	}
+	if !ignoreMissing && len(requestedOCMComponents) > 0 {
+		return nil, fmt.Errorf("the following requested OCM components were not found: %v", strings.Join(slices.Collect(maps.Keys(requestedOCMComponents)), ", "))
+	}
+	return m, nil
 }
 
 // GetDependents returns all components that depend on the given component.
