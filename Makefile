@@ -122,9 +122,25 @@ kind-up: registry-up git-server-up $(KIND) $(KUBECTL) $(HELM)
 kind-down: git-server-down registry-down $(KIND) $(KUBECTL)
 	@$(HACK_DIR)/kind/kind-delete-cluster.sh single
 
+.PHONY: kind-kubeconfig
+kind-kubeconfig: $(KIND) $(KUBECTL)
+	@$(HACK_DIR)/kind/glk-kubeconfigs.sh
+
 .PHONY: e2e-prepare
 e2e-prepare: $(SKAFFOLD) $(HELM) $(KUBECTL) $(YQ)
 	@$(HACK_DIR)/kind/generate-repos.sh $(REPO_ROOT)/dev/e2e
 	@$(HACK_DIR)/kind/deploy-flux.sh $(REPO_ROOT)/dev/e2e
 	@$(HACK_DIR)/kind/prepare-garden.sh $(REPO_ROOT)/dev/e2e
 	@$(HACK_DIR)/kind/provider-local/build.sh $(REPO_ROOT)/dev/e2e
+
+.PHONY: test-e2e-local
+test-e2e-local: ## runs e2e-test, needs separate 'make kind-up'
+	@TEST_E2E_USE_EXISTING_ENV=true $(HACK_DIR)/test-e2e-local.sh ./test/e2e/...
+
+.PHONY: test-e2e
+test-e2e: ## runs e2e-test with cluster creation and deletion
+	@$(HACK_DIR)/test-e2e-local.sh ./test/e2e/...
+
+.PHONY: e2e-cleanup
+e2e-cleanup: kind-down git-server-cleanup
+	@rm -rf $(REPO_ROOT)/dev/e2e
