@@ -84,11 +84,14 @@ func (r *registry) renderCustomComponents(ocmComponentName, componentDir string,
 		return fmt.Errorf("no component vector found for custom component %s", ocmComponentName)
 	}
 
+	templateSuffixes := opts.GetTemplateSuffices()
+
 	return opts.GetFilesystem().Walk(componentDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		if info.IsDir() || !strings.HasSuffix(info.Name(), ".template") {
+		targetFile := toTargetFile(info, templateSuffixes)
+		if targetFile == "" {
 			return nil
 		}
 		content, err := opts.GetFilesystem().ReadFile(path)
@@ -99,7 +102,6 @@ func (r *registry) renderCustomComponents(ocmComponentName, componentDir string,
 		if err != nil {
 			return fmt.Errorf("error rendering template file %s for custom component %s: %w", path, ocmComponentName, err)
 		}
-		targetFile := strings.TrimSuffix(path, ".template")
 		if err := opts.GetFilesystem().WriteFile(targetFile, renderedContent, 0600); err != nil {
 			return fmt.Errorf("error writing rendered template file %s for custom component %s: %w", targetFile, ocmComponentName, err)
 		}
@@ -113,4 +115,18 @@ func New() Interface {
 	return &registry{
 		components: orderedmap.NewOrderedMap[string, components.Interface](),
 	}
+}
+
+func toTargetFile(info os.FileInfo, templateSuffices []string) string {
+	if info.IsDir() {
+		return ""
+	}
+	filename := info.Name()
+	for _, suffix := range templateSuffices {
+		targetFile := strings.TrimSuffix(info.Name(), suffix)
+		if targetFile != filename {
+			return targetFile
+		}
+	}
+	return ""
 }

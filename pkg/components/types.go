@@ -32,6 +32,8 @@ type Options interface {
 	GetFilesystem() afero.Afero
 	// GetLogger returns the logger instance.
 	GetLogger() logr.Logger
+	// GetTemplateSuffices returns the template suffices to consider when processing templates.
+	GetTemplateSuffices() []string
 }
 
 // LandscapeOptions is an interface for options passed to components for generating the landscape.
@@ -57,10 +59,11 @@ type Interface interface {
 }
 
 type options struct {
-	componentVector utilscomponentvector.Interface
-	targetPath      string
-	filesystem      afero.Afero
-	logger          logr.Logger
+	componentVector  utilscomponentvector.Interface
+	targetPath       string
+	filesystem       afero.Afero
+	logger           logr.Logger
+	templateSuffices []string
 }
 
 // GetComponentVector returns the component vector.
@@ -83,9 +86,15 @@ func (o *options) GetLogger() logr.Logger {
 	return o.logger
 }
 
+// GetTemplateSuffices returns the template suffices to consider when processing templates.
+func (o *options) GetTemplateSuffices() []string {
+	return o.templateSuffices
+}
+
 // NewOptions returns a new Options instance.
 func NewOptions(opts *generateoptions.Options, fs afero.Afero) (Options, error) {
 	componentVectorBytes := componentvector.DefaultComponentsYAML
+	templateSuffices := []string{".template"}
 	if opts.Config != nil && opts.Config.VersionConfig != nil {
 		if opts.Config.VersionConfig.ComponentsVectorFile != nil {
 			opts.Log.Info("Using custom component vector file", "file", *opts.Config.VersionConfig.ComponentsVectorFile)
@@ -103,6 +112,7 @@ func NewOptions(opts *generateoptions.Options, fs afero.Afero) (Options, error) 
 				return nil, fmt.Errorf("failed to update default component vector file: %w", err)
 			}
 		}
+		templateSuffices = append(templateSuffices, opts.Config.VersionConfig.CustomTemplatesSuffices...)
 	}
 
 	componentVector, err := utilscomponentvector.New(componentVectorBytes)
@@ -111,10 +121,11 @@ func NewOptions(opts *generateoptions.Options, fs afero.Afero) (Options, error) 
 	}
 
 	return &options{
-		componentVector: componentVector,
-		targetPath:      opts.TargetDirPath,
-		filesystem:      fs,
-		logger:          opts.Log,
+		componentVector:  componentVector,
+		targetPath:       opts.TargetDirPath,
+		filesystem:       fs,
+		logger:           opts.Log,
+		templateSuffices: templateSuffices,
 	}, nil
 }
 
