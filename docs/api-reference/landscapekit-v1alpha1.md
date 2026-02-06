@@ -412,6 +412,20 @@ Possible values are &ldquo;Disabled&rdquo; (default) and &ldquo;ReleaseBranch&rd
 Only used if no ComponentsVectorFile is specified.</p>
 </td>
 </tr>
+<tr>
+<td>
+<code>customTemplatesSuffices</code></br>
+<em>
+[]string
+</em>
+</td>
+<td>
+<p>CustomTemplatesSuffices is a list of suffices to use for custom templates for custom components.
+The default suffix <code>.template</code> is always included and does not need to be specified here.
+For each suffix, the landscape generator will look for files with the name format <component-name><suffix> in the component directory.
+It expects Go templates to be filled with values from the components vector.</p>
+</td>
+</tr>
 </tbody>
 </table>
 <hr/>

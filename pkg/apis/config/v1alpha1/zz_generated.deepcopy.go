@@ -200,6 +200,11 @@ func (in *VersionConfiguration) DeepCopyInto(out *VersionConfiguration) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.CustomTemplatesSuffices != nil {
+		in, out := &in.CustomTemplatesSuffices, &out.CustomTemplatesSuffices
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
 	return
 }
 

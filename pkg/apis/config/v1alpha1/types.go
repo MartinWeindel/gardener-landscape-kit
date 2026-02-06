@@ -116,4 +116,9 @@ type VersionConfiguration struct {
 	// Only used if no ComponentsVectorFile is specified.
 	// +optional
 	DefaultVersionsUpdateStrategy *string `json:"defaultVersionsUpdateStrategy,omitempty"`
+	// CustomTemplatesSuffices is a list of suffices to use for custom templates for custom components.
+	// The default suffix `.template` is always included and does not need to be specified here.
+	// For each suffix, the landscape generator will look for files with the name format <component-name><suffix> in the component directory.
+	// It expects Go templates to be filled with values from the components vector.
+	CustomTemplatesSuffices []string `json:"customTemplatesSuffices,omitempty"`
 }
