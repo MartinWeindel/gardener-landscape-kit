@@ -59,7 +59,7 @@ func run(_ context.Context, opts *Options) error {
 		return err
 	}
 
-	return ocm.ResolveOCMComponents(opts.Log, opts.Config, opts.LandscapeDir, outputDir, opts.Workers, opts.Debug)
+	return ocm.ResolveOCMComponents(opts.Log, opts.Config, opts.LandscapeDir, outputDir, opts.Workers, opts.Debug, opts.IgnoreMissingComponents)
 }
 
 func writeGitIgnoreFile(opts *Options) error {

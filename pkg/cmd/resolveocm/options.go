@@ -46,6 +46,9 @@ type Options struct {
 
 	// Workers is the number of concurrent workers to use for resolving OCM components.
 	Workers int
+
+	// IgnoreMissingComponents indicates whether to ignore missing components during resolution.
+	IgnoreMissingComponents bool
 }
 
 // Validate validates the options.
@@ -83,6 +86,7 @@ func (o *Options) addFlags(fs *pflag.FlagSet) {
 	fs.StringVarP(&o.configFilePath, "config", "c", o.configFilePath, "Path to configuration file.")
 	fs.BoolVar(&o.Debug, "debug", false, "Enable debug output files like resources and imagevectors.")
 	fs.IntVar(&o.Workers, "workers", 10, "Number of concurrent workers to use for resolving OCM components.")
+	fs.BoolVar(&o.IgnoreMissingComponents, "ignore-missing-components", false, "Ignore missing components during resolution. By default, the command will fail if a component cannot be resolved or is not referenced.")
 }
 
 func (o *Options) effectiveIntermediateOutputDir() string {
